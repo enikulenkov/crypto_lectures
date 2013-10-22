@@ -206,6 +206,52 @@
 безопасны. Такие примитивы - безопасные ГСЧ}
 
 %TODO: Slides for building block ciphers from PRG
-%TODO: Add slides for CBC and CTR modes
+%TODO: Add slides for solving problems of ECB mode
+
+
+\begin{frame}
+  \frametitle{Алгоритм создания цепочек ECB}
+
+  \includegraphics[width=\linewidth]{images/png/ECB_mode}
+
+  \begin{itemize}
+    \item{ECB -- пример некорректного использования PRP}
+    \item{Основная проблема: если $m_{1}=m_{2}$, то $с_{1}=c_{2}$}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Алгоритм создания цепочек ECB}
+
+  \includegraphics[width=\linewidth]{images/png/ECB_failure}
+
+\end{frame}
+
+%TODO: Refine slides for CBC and CTR modes
+
+\begin{frame}
+  \frametitle{Алгоритм создания цепочек CBC}
+
+  \includegraphics[width=\linewidth]{images/png/CBC_random_IV}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Алгоритм создания цепочек CTR}
+
+  \includegraphics[width=\linewidth]{images/png/CTR_mode}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Сравнение алгоритмов CBC и CTR}
+
+  \includegraphics[width=\linewidth]{images/png/CTR_vs_CBC_comparison}
+
+\end{frame}
 
 \end{document}
