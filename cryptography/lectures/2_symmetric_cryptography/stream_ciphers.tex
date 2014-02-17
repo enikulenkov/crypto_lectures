@@ -7,6 +7,7 @@
 \usepackage[T2A,T1]{fontenc}
 \usepackage[english, russian]{babel}
 \usepackage{etoolbox}
+\usepackage{amssymb}
 \usetheme{Pittsburgh}
 
 \selectlanguage{russian}
@@ -169,8 +170,7 @@
   Для этого используются генераторы псевдослучайных чисел (ГПЧ).
   \vspace{1em}
 
-  %TODO: replace >> with better sign
-  \[G:\set{0,1}^{s} \mapsto \set{0,1}^{n}, n>>s\]
+  \[G:\set{0,1}^{s} \mapsto \set{0,1}^{n}, n \gg s\]
 
   \mynote{Требования к генератору: 
     1. Должен существовать детерминистический алгоритм, который может быть эффективно выполнен для реализации генератора.
@@ -214,7 +214,7 @@
 
   Если ГСЧ предсказуем, то
 
-  \[\exists i: G(k)|_{1,..,i} \stackrel{alg}{\longrightarrow} G(k)|_{i+1,...,n}\]
+  \[\exists i: G(k)|_{1 \ldots i} \stackrel{alg}{\longrightarrow} G(k)|_{i+1 \ldots n}\]
 
   \mynote{Предсказуемость ГСЧ может полностью свести безопасность потокового шифра на нет.
     Пример - протокол SMTP. Так как любое письмо начинается с FROM:, то злоумышленник может определить первые 5
@@ -222,6 +222,79 @@
 
   \mynote{Многие реализации ГСЧ, которые поставляются в стандартных библиотеках, на самом деле легко предсказуемы.
     Например, реализация функции random() в библиотеке glibc. Kerberos v.4 использовало эту функцию, что привело к её взлому.}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Предсказуемость ГСЧ}
+
+  \longdef{ГСЧ $G:K \longrightarrow \set{0,1}^{r}$ называется предсказуемым, если существует
+   эффективно вычислимый алгоритм $A$ и $\exists 1 \le i \le n-1$ такое, что
+    \begin{displaymath}
+      {Pr_{k \stackrel{R}{\longleftarrow} K}[A(G(k))|_{1 \ldots i} = G(k)|_{i+1}] \ge 1/2 + \varepsilon}
+    \end{displaymath}
+  }
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Предсказуемые ГСЧ}
+
+  \begin{block}{Линейный конгруэнтный метод}
+    \begin{itemize}
+      \item{Три параметра: a, b, p}
+      \item{$r[0] = seed$}
+      \item{$r[i] = (a*r[i-1]+b)~mod~p$}
+      \item{Используется в чистом виде или с некоторыми модификациями во многих реализациях стандартных языковых библиотеках}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Потоковые шифры. Атаки}
+
+  \begin{block}{Повторное использование ключа в шифровании одноразовыми блокнотами}
+    \begin{itemize}
+      \item{Ключ для поточного шифра не должен использоваться больше одного раза
+        \[ c_{1} \leftarrow m_{1} \oplus PRG(k) \]
+        \[ c_{2} \leftarrow m_{2} \oplus PRG(k) \]
+        \[ c_{1} \oplus c_{2} =  m_{1} \oplus m_{2} \]
+      }
+      \item{Существующая избыточность человеческого языка и ASCII-кодирования позволяет восстановить открытый текст}
+      \item{Примеры повторного использования ключа: проект "Венона", MS-PPTP, WEP}
+      \item{Невозможность использования потоковых шифров в некоторых областях (шифрование данных на диске)}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Потоковые шифры. Атаки}
+
+  \begin{block}{Невозможность проверки целостности}
+    Злоумышленник может изменить зашифрованное сообщение предсказуемым образом:
+      \[ c_{Alice} = m \oplus k \]
+      \[ c_{Mallory} = c_{Alice} \oplus p \]
+      \[ m_{Bob} = c_{Mallory} \oplus k = m \oplus p \]
+  \end{block}
+
+\end{frame}
+
+
+% TODO: Describe existing algorithms in more detail
+\begin{frame}
+  \frametitle{Потоковые шифры. Примеры}
+
+  \begin{itemize}
+    \item{RC4}
+    \item{Шифры, использующие регистр сдвига с линейной обратной связью (LFSR)}
+    \item{Семейство шифров eStream}
+  \end{itemize}
 
 \end{frame}
 
