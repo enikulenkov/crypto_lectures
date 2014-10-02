@@ -8,6 +8,7 @@
 \usepackage[english, russian]{babel}
 \usepackage{etoolbox}
 \usepackage{amssymb}
+\usepackage{listings}
 \usetheme{Pittsburgh}
 
 \selectlanguage{russian}
@@ -30,12 +31,18 @@
 }
 
 \title{Симметричная криптография. Потоковые шифры}
-\author{Егор Никуленков}
 \institute{ВГУ}
-\date{2013}
+\date{2014}
 \begin{document}
 
 \frame{\titlepage}
+
+\begin{frame}
+  \frametitle{Классификация криптографических алгоритмов}
+
+  \includegraphics[width=\linewidth]{./imgs/CA_classification_stream.png}
+
+\end{frame}
 
 \begin{frame}
   \frametitle{Свойства операции xor}
@@ -48,8 +55,6 @@
 \end{frame}
 
 
-% TODO: Remind where we have stopped. Show diagram of cryptographic algorithms (symmetric cryptography, public-key crypto).
-% Show the place of stream ciphers in this diagram.
 \begin{frame}
   \frametitle{Симметричная криптография}
 
@@ -146,6 +151,12 @@
     есть по зашифрованному сообщению невозможно определить какое из сообщений
     более вероятно было зашифровано}
   \mynote{Шеннон теоретически показал, что совершенная безопасность возможна}
+  \mynote{Informally,if you intercept a cipher-text from a perfectly secure
+    encryption system, you can find a key that causes that cipher-text to
+    decrypt to any message you want (of the correct length). So without
+    knowing which key the author actually picked, you never learn anything
+    about the message. This holds even if you try every possible key (because
+    all keys decrypt the cipher-text to a possibly valid message)}
 
 \end{frame}
 
@@ -247,7 +258,7 @@
       \item{Три параметра: a, b, p}
       \item{$r[0] = seed$}
       \item{$r[i] = (a*r[i-1]+b)~mod~p$}
-      \item{Используется в чистом виде или с некоторыми модификациями во многих реализациях стандартных языковых библиотеках}
+      \item{Используется в чистом виде или с некоторыми модификациями во многих реализациях стандартных языковых библиотек}
     \end{itemize}
   \end{block}
 
@@ -265,7 +276,7 @@
         \[ c_{1} \oplus c_{2} =  m_{1} \oplus m_{2} \]
       }
       \item{Существующая избыточность человеческого языка и ASCII-кодирования позволяет восстановить открытый текст}
-      \item{Примеры повторного использования ключа: проект "Венона", MS-PPTP, WEP}
+      \item{Примеры повторного использования ключа: проект ``Венона``, MS-PPTP, WEP}
       \item{Невозможность использования потоковых шифров в некоторых областях (шифрование данных на диске)}
     \end{itemize}
   \end{block}
@@ -286,7 +297,6 @@
 \end{frame}
 
 
-% TODO: Describe existing algorithms in more detail
 \begin{frame}
   \frametitle{Потоковые шифры. Примеры}
 
@@ -296,6 +306,89 @@
     \item{Семейство шифров eStream}
   \end{itemize}
 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Шифр RC4}
+
+  \begin{itemize}
+    \item{$c_{i} = m_{i} \oplus k_{i}$}
+  \end{itemize}
+
+  \begin{block}{Входные параметры:}
+    \begin{itemize}
+      \item{Ключ размером L бит ($40 \le L \le 2048$)}
+      \item{$n$ - размер слова для алгоритма}
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Внутреннее состояние:}
+    \begin{itemize}
+      \item{Массив размеров $2^n$ (S-блок)}
+      \item{Значения счетчиков $i$,$j$}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Шифр RC4}
+
+  \begin{block}{2 стадии генерации ключевого потока}
+    \begin{itemize}
+      \item{Инициализация S-блока}
+      \item{Генерация псевдослучайного слова $K$}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Шифр RC4}
+
+  \begin{block}{Инициализация S-блока ($n = 8$)}
+    \lstset{language=Pascal}
+    \begin{lstlisting}[frame=single]
+    for i := 0 to 255
+        S[i] := i
+    end
+    j := 0
+    for i := 0 to 255
+        j := (j + S[i] + Key[i mod L]) mod 256
+        swap S[i] and S[j]
+    end
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Шифр RC4}
+
+  \begin{block}{Генерация псевдослучайного слова $K$}
+    \lstset{language=Pascal}
+    \begin{lstlisting}[frame=single]
+      i := 0
+      j := 0
+      while (generation cycle):
+          i := (i + 1) mod 256
+          j := (j + S[i]) mod 256
+          swap S[i] and S[j]
+          t := (S[i] + S[j]) mod 256
+          K := S[t] //generated one word for K
+      end
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Шифр RC4}
+
+  \begin{block}{Преимущества}
+    \begin{itemize}
+      \item{Переменный размер ключа}
+      \item{Высокая скорость работы}
+    \end{itemize}
+  \end{block}
+
+  Применяется в протоколах TLS/SSL, WEP, WPA.
 \end{frame}
 
 \end{document}
