@@ -5,19 +5,57 @@
 \usetheme{Pittsburgh}
 
 \selectlanguage{russian}
-\newcommand{\define}[2]{{\bf #1} --- #2.\vspace{1em}}
+\newcommand{\define}[2]{{\bf #1} --- #2\vspace{1em}}
 \newcommand{\longdef}[1]{{\textbf{\underline{Опр:}} #1}}
 \newcommand{\set}[1]{{\lbrace #1 \rbrace}}
 
 \title{Симметричная криптография. Блочные шифры}
-\author{Егор Никуленков}
 \institute{ВГУ}
-\date{2013}
+\date{2014}
 \begin{document}
 
 \frame{\titlepage}
 
-%TODO: Add slide with overview of ciphers. Point to the place of block ciphers in it.
+\begin{frame}
+  \frametitle{Классификация криптографических алгоритмов}
+
+  \includegraphics[width=\linewidth]{./images/png/CA_classification_block.png}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Потоковые шифры}
+
+  \begin{itemize}
+    \itemsep 2em
+    \item{Основная идея: замена потока действительно случайных чисел на 
+      поток псевдослучайных чисел}
+    \item{$G$ - генератор псевдослучайных чисел}
+    \item{Функция шифрования: \newline
+      $E(k,m)=m \oplus G(k)$}
+    \item{Функция дешифрования: \newline
+      $D(k,c)=c \oplus G(k)$}
+    \item{Может применяться к сообщениям произвольной длины}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Недостатки потоковых шифров}
+
+  \begin{itemize}
+    \itemsep 2em
+    \item{Невозможность использования одинаковых значений ключа дважды}
+    \item{Невозможность проверки целостности сообщений}
+    \item{Состояние ГСЧ на обоих сторонах общения должно быть синхронизировано}
+    \item{Результат шифрования полностью определяется открытым текстом и
+      используемым ключом}
+  \end{itemize}
+
+\end{frame}
+
+
 \begin{frame}
   \frametitle{Определение}
 
@@ -32,7 +70,10 @@
 
   \note{Шифр принимает на вход n-битный открытый текст и выдает n-битный шифрованный текст}
   \note{Открытый и шифрованный текст всегда имеет один и тот же размер, который называется размером блока}
-  \note{Рассказать о том, насколько блочные шифры важны и случаи, когда нам нужно шифровать именно блоками, а не потоком.}
+  \note{Рассказать о том, насколько блочные шифры важны и случаи, когда нам нужно шифровать именно блоками, а не потоком.
+        Поточные шифры являются state-full алгоритмами, в отличие от блочных шифров. Поточные шифры плохо подходят когда
+        приходится использовать ключ несколько раз (шифрование файлов), а также когда используются message-oriented
+        протоколы}
   \note{Блочные шифры намного медленнее, чем потоковые. Можно взять слайд 3 у Boneh}
 
 \end{frame}
@@ -48,14 +89,18 @@
   $R(k,m)$ - раундовая функция
 
   У AES-128 10 раундовых функций
+  \note{The idea is to make a strong encryption function out of a weaker
+        round function (easy to implement) by repeatedly using it.}
+  \note{For every subkey the round function must be invertible; if not
+        decryption is impossible.}
 \end{frame}
 
 
 \begin{frame}
   \frametitle{Псевдослучайные функции и перестановки}
 
-  \define{Псевдослучайная функция (Pseudo Random Function, PRF)} {
-    эффективно вычислимая функция, определенная на $(K,X,Y)$ \newline
+  \define{Псевдослучайная функция (Pseudo Random Function, PRF)}
+    {эффективно вычислимая функция, определенная на $(K,X,Y)$ \newline
     \[F: K \times X \rightarrow Y\]}
 
 \end{frame}
@@ -64,8 +109,8 @@
 \begin{frame}
   \frametitle{Псевдослучайные функции и перестановки}
 
-  \define{Псевдослучайная перестановка (Pseudo Random Permutation, PRP)} {
-    эффективно вычислимая функция, определенная на $(K,X)$ \newline
+  \define{Псевдослучайная перестановка (Pseudo Random Permutation, PRP)}
+    {эффективно вычислимая функция, определенная на $(K,X)$ \newline
     \[E: K \times X \rightarrow X\]
     и имеющая следующие свойства:
 
@@ -201,6 +246,15 @@
   \note{Существуют специальные ассемблерные инструкции для архитектуры x86, которые реализуют алгоритм AES}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{Построение PRF на основе ГСЧ}
+
+  \includegraphics[width=\linewidth]{images/png/prf_from_prg}
+
+\end{frame}
+
+
 \note{Доказать безопасность AES более-менее формально тяжело, потому что в алгоритме
 используется большое количество эвристик. Хотелось бы построить блочный шифр из примитивов, которые сами по себе
 безопасны. Такие примитивы - безопасные ГСЧ}
@@ -210,22 +264,30 @@
 
 
 \begin{frame}
-  \frametitle{Алгоритм создания цепочек ECB}
+  \frametitle{Режим шифрования ECB (Шифрование независимыми блоками)}
 
   \includegraphics[width=\linewidth]{images/png/ECB_mode}
 
   \begin{itemize}
     \item{ECB -- пример некорректного использования PRP}
-    \item{Основная проблема: если $m_{1}=m_{2}$, то $с_{1}=c_{2}$}
+    \item{Основная проблема: если $m_{1}=m_{2}$, то $c_{1}=c_{2}$}
   \end{itemize}
 
 \end{frame}
 
 
 \begin{frame}
-  \frametitle{Алгоритм создания цепочек ECB}
+  \frametitle{Режим шифрования ECB (Шифрование независимыми блоками)}
 
   \includegraphics[width=\linewidth]{images/png/ECB_failure}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Детерминированный режим счетчика (Det CTR)}
+
+  \includegraphics[width=\linewidth]{images/png/deterministic_CTR}
 
 \end{frame}
 
