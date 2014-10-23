@@ -125,6 +125,53 @@
 \begin{frame}
   \frametitle{Конструкция Меркла-Дамгарда}
 
+  \includegraphics[width=\linewidth]{./images/png/merkle_damgrand.png}
+
+  \vspace{8mm}
+  Имея $h: T \times X \rightarrow T$ (функция сжатия)
+
+  \vspace{8mm}
+  Получаем $H: X^{\leq L} \rightarrow T$
+
+  \vspace{8mm}
+  PB: блок добивки $1000 \ldots 0 || \text{длина\_сообщения}$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Функция сжатия на основе блочного шифра}
+
+  Пусть $E:K \times {0,1}^{n} \rightarrow {0,1}^{n}$ -- блочный шифр
+
+  \vspace{8mm}
+  Функция сжатия Девиса-Мейера: $h(H,m) = E(m,H) \oplus H$
+
+  \vspace{8mm}
+  \theorema{Для нахождения коллизии необходимо выполнить $O(2^{n/2})$ вычислений $(E,D)$}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Функция сжатия на основе блочного шифра}
+
+  Пусть $E:K \times {0,1}^{n} \rightarrow {0,1}^{n}$ -- блочный шифр
+
+  \vspace{8mm}
+  Функция сжатия Девиса-Мейера: $h(H,m) = E(m,H) \oplus H$
+
+  \vspace{8mm}
+  \theorema{Для нахождения коллизии необходимо выполнить $O(2^{n/2})$ вычислений $(E,D)$}
+
+  \vspace{8mm}
+  Пример: SHA-256
+\end{frame}
+
+\begin{frame}
+  \frametitle{HMAC}
+
+  $S(k,m) = H (k \oplus opad, H(k \oplus ipad || m))$
+
+  opad, ipad -- константы, определенные стандартом
+
+  \includegraphics[width=\linewidth]{./images/png/HMAC.png}
 \end{frame}
 
 \end{document}
